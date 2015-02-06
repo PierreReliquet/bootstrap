@@ -214,12 +214,28 @@ describe('$modal', function () {
       expect(modal.result).toBeResolvedWith('closed ok');
     });
 
+    it('should resolve returned promise on close with multiple arguments', function () {
+      var modal = open({template: '<div>Content</div>'});
+      close(modal, 'closed ok', 'another parameter');
+
+      expect(modal.result).toBeResolvedWith('closed ok', 'another parameter');
+    });
+
+
     it('should reject returned promise on dismiss', function () {
 
       var modal = open({template: '<div>Content</div>'});
       dismiss(modal, 'esc');
 
       expect(modal.result).toBeRejectedWith('esc');
+    });
+
+    it('should reject returned promise on dismiss with multiple parameters', function () {
+
+      var modal = open({template: '<div>Content</div>'});
+      dismiss(modal, 'esc', 'another parameter');
+
+      expect(modal.result).toBeRejectedWith('esc', 'another parameter');
     });
 
     it('should expose a promise linked to the templateUrl / resolve promises', function () {

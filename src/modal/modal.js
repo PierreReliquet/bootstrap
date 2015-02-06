@@ -268,18 +268,26 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.transition'])
         body.addClass(OPENED_MODAL_CLASS);
       };
 
-      $modalStack.close = function (modalInstance, result) {
+      $modalStack.close = function (modalInstance) {
+        // Only one parameter is mandatory the modalInstance since the other one
+        // are recovered dynamically through arguments object
         var modalWindow = openedWindows.get(modalInstance);
         if (modalWindow) {
-          modalWindow.value.deferred.resolve(result);
+          // Here we slice after first element since it is the modalInstance
+          var args = Array.prototype.slice.call(arguments, 1);
+          modalWindow.value.deferred.resolve.apply(modalWindow.value.deferred, args);
           removeModalWindow(modalInstance);
         }
       };
 
-      $modalStack.dismiss = function (modalInstance, reason) {
+      $modalStack.dismiss = function (modalInstance) {
+        // Only one parameter is mandatory the modalInstance since the other one
+        // are recovered dynamically through arguments object
         var modalWindow = openedWindows.get(modalInstance);
         if (modalWindow) {
-          modalWindow.value.deferred.reject(reason);
+          // Here we slice after first element since it is the modalInstance
+          var args = Array.prototype.slice.call(arguments, 1);
+          modalWindow.value.deferred.reject.apply(modalWindow.value.deferred, args);
           removeModalWindow(modalInstance);
         }
       };
@@ -338,11 +346,17 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.transition'])
             var modalInstance = {
               result: modalResultDeferred.promise,
               opened: modalOpenedDeferred.promise,
-              close: function (result) {
-                $modalStack.close(modalInstance, result);
+              close: function () {
+                // no parameters since we should be able to pass more than one parameter
+                var args = Array.prototype.slice.call(arguments);
+                args.unshift(modalInstance);
+                $modalStack.close.apply(this, args);
               },
-              dismiss: function (reason) {
-                $modalStack.dismiss(modalInstance, reason);
+              dismiss: function () {
+                // no parameters since we should be able to pass more than one parameter
+                var args = Array.prototype.slice.call(arguments);
+                args.unshift(modalInstance);
+                $modalStack.dismiss.apply(this, args);
               }
             };
 
